@@ -1,0 +1,22 @@
+﻿  stdafx.cpp
+  Cache.cpp
+c:\users\dimap\desktop\общая\универ\курсовые работы\курсовая работа по ооп на с++ второй семестр 1 курс\fly\fly\cache.cpp(76): warning C4018: <: несоответствие типов со знаком и без знака
+  bomber.cpp
+  fly.cpp
+  getvalues.cpp
+c:\users\dimap\desktop\общая\универ\курсовые работы\курсовая работа по ооп на с++ второй семестр 1 курс\fly\fly\getvalues.cpp(165): warning C4101: s: неиспользованная локальная переменная
+  helicopter.cpp
+  jetfighter.cpp
+  lang.cpp
+c:\users\dimap\desktop\общая\универ\курсовые работы\курсовая работа по ооп на с++ второй семестр 1 курс\fly\fly\lang.cpp(41): warning C4101: e: неиспользованная локальная переменная
+  main.cpp
+  manager.cpp
+c:\users\dimap\desktop\общая\универ\курсовые работы\курсовая работа по ооп на с++ второй семестр 1 курс\fly\fly\manager.cpp(18): warning C4018: <: несоответствие типов со знаком и без знака
+  plain.cpp
+  screen.cpp
+c:\users\dimap\desktop\общая\универ\курсовые работы\курсовая работа по ооп на с++ второй семестр 1 курс\fly\fly\screen.cpp(28): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\dimap\desktop\общая\универ\курсовые работы\курсовая работа по ооп на с++ второй семестр 1 курс\fly\fly\screen.cpp(363): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\dimap\desktop\общая\универ\курсовые работы\курсовая работа по ооп на с++ второй семестр 1 курс\fly\fly\screen.cpp(381): warning C4018: >=: несоответствие типов со знаком и без знака
+  transportAircraft.cpp
+  Создание кода...
+  Fly.vcxproj -> C:\Users\dimap\Desktop\Общая\Универ\Курсовые работы\Курсовая работа по ООП на С++ второй семестр 1 курс\Fly\Debug\Fly.exe

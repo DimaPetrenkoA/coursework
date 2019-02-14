@@ -1,0 +1,3499 @@
+// bomber.cpp
+#include "stdafx.h"
+#include <conio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <iomanip>
+#include "windows.h"
+#include "fly.h"
+#include "bomber.h"
+#include "lang.h"
+#include "getvalues.h"
+#include "screen.h"
+
+using namespace std;
+
+//Конструкторы
+bomber::bomber() {
+	cl = 4;
+	name = "Bomber";
+	numOfPass = 0;
+}
+
+bomber::bomber(int S, int Dis, int Num, int H, int fr, int fm, int pt) {
+	speed = S;
+	height = H;
+	distance = Dis;
+	numOfPass = 0;
+	fradius = fr;
+	fmass = fm;
+	ptime = pt;
+
+	cl = 4;
+	name = "Bomber";
+}
+
+//Деструктор
+bomber::~bomber(){
+
+}
+
+//Get методы класса
+int bomber::getFradius() {
+	return fradius;
+}
+
+int bomber::getFmass() {
+	return fmass;
+}
+
+int bomber::getPtime() {
+	return ptime;
+}
+
+//метод установки боевого радиуса
+int bomber::setFradius() {
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+
+	int frad = getInt();
+	do {
+		if (frad < 2000 || frad > 8000)			//сравниваем с макс./мин. боевым радиусов для бомбардировщиков
+		{
+			cerr << Lang::lang[31];
+			frad = getInt();
+		}
+		else
+		{
+			fradius = frad;
+			return 1;
+		}
+	} while (true);
+
+}
+
+//метод установки боевой нагрузки
+int bomber::setFmass() {
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+
+	int fms = getInt();
+	do {
+		if (fms < 10000 || fms > 45000)		//сравниваем с макс./мин. боевой нагрузкой для бомбардировщиков
+		{
+			cerr << Lang::lang[31];
+			fms = getInt();
+		}
+		else
+		{
+			fmass = fms;
+			return 1;
+		}
+	} while (true);
+
+}
+//метод установки дальности полета	
+int bomber::SetDistance() {
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+
+	int dist = getInt();
+	do {
+		if (dist < 1 || dist>maxdist)  //сравниваем с максимальной дальностью полета для данного класса
+		{
+			cerr << Lang::lang[31];
+			dist = getInt();
+		}
+		else
+		{
+			distance = dist;
+			return 1;
+		}
+	} while (true);
+
+}
+//метод установки скорости
+int bomber::SetSpeed() {
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+
+	int spd = getInt();
+	do {
+		if (spd < 40 || spd>maxspeed)	//сравниваем с максимальной скоростью полета для данного класса
+		{
+			cerr << Lang::lang[31];
+			spd = getInt();
+		}
+		else
+		{
+			speed = spd;
+			return 1;
+		}
+	} while (true);
+
+}
+//метод установки колчества пассажиров
+int bomber::SetNumOfPass() {
+	cout << Lang::lang[164] << endl;
+	return 0;
+}
+//метод установки высоты полета
+int bomber::SetHeight() {
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+
+	int hei = getInt();
+	do {
+		if (hei < 1000 || hei>maxheight)		//сравниваем с максимальной высотой полета для данного класса
+		{
+			cerr << Lang::lang[31];
+			hei = getInt();
+		}
+		else
+		{
+			height = hei;
+			return 1;
+		}
+	} while (true);
+}
+//метод установки времени патрулирования
+int bomber::setPtime() {
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+
+	int ptm = getInt();
+	do {
+		if (ptm <5  || ptm>15)			//сравниваем с макс.\мин. временем патрулирования для бомбардировщиков
+		{
+			cerr << Lang::lang[31];
+			ptm = getInt();
+		}
+		else
+		{
+			ptime = ptm;
+			return 1;
+		}
+	} while (true);
+
+}
+
+//метод вывода данных об объекте
+void bomber::print() {
+	system("mode con cols=160");
+	cout << setiosflags(ios::left);
+	cout << setw(30);
+	cout << Lang::lang[86];
+	cout << setw(20);
+	cout << Lang::lang[87];
+	cout << setw(30);
+	cout << Lang::lang[88];
+	cout << setw(20);
+	cout << Lang::lang[89];
+	cout << setw(20);
+	cout << Lang::lang[95];
+	cout << setw(20);
+	cout << Lang::lang[96];
+	cout << setw(20);
+	cout << Lang::lang[97];
+
+	cout.width(30);
+	cout << GetSpeed();
+	cout << setw(20);
+	cout << GetDistance();
+	cout << setw(30);
+	cout << GetNumOfPass();
+	cout << setw(20);
+	cout << GetHeight();
+	cout << setw(20);
+	cout << getFmass();
+	cout << setw(20);
+	cout << getFradius();
+	cout << setw(20);
+	cout << getPtime();
+}
+
+//метод редактирования данных
+void bomber::Edit() {
+	system("cls");
+	bool fl = false;
+	cout << Lang::lang[62] << endl;
+	cout << Lang::lang[63] << endl;
+	cout << Lang::lang[64] << endl;
+	cout << Lang::lang[65] << endl;
+	cout << Lang::lang[73] << endl;
+	cout << Lang::lang[74] << endl;
+	cout << Lang::lang[75] << endl;
+	cout << Lang::lang[68] << endl;
+	int k = getInt();
+	do {
+		if (k < 1 || k>7)
+		{
+			cerr << Lang::lang[31];
+			k = getInt();
+		}
+		else
+		{
+			fl = true;
+		}
+	} while (fl != true);
+
+	system("cls");
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+	cout << Lang::lang[98] << endl;
+	switch (k) {
+		//в зависимости от выбора пользователя вызываем необходимый Set метод
+	case 1:
+		SetSpeed();
+		break;
+	case 2:
+		SetDistance();
+		break;
+	case 3:
+		SetHeight();
+		break;
+	case 4:
+		SetNumOfPass();
+		system("pause");
+		break;
+	case 5:
+		setFradius();
+		break;
+	case 6:
+		setFmass();
+		break;
+	case 7:
+		setPtime();
+		break;
+	}
+
+}
+
+// Cache.cpp
+#include "stdafx.h"
+#include "Cache.h"
+#include "manager.h"
+#include "fly.h"
+#include "helicopter.h"
+#include "getvalues.h"
+#include "jetfighter.h"
+#include "bomber.h"
+#include "plain.h"
+#include "transportAircraft.h"
+#include <fstream>
+#include <iostream>
+#include <iomanip>
+#include <sstream> 
+#include "lang.h"
+#pragma warning(disable : 4996) //_CRT_SECURE_NO_WARNINGS
+
+string FCache::filename;		//имя файла кеша
+
+//метод установки имени файла кеша
+void FCache::setCacheFilename(string filename) {
+
+	FCache::filename = filename;
+}
+
+//метод сохранения объектов в файл
+void FCache::saveCache() {
+	setlocale(LC_ALL, "Russian");
+	ofstream Cache;
+	Cache.open(getCacheName());		//открываем файла
+		
+	if (Cache.is_open()) {			//если открыт, анчинаем запись
+		Cache << setiosflags(ios::left);
+		Cache << Lang::getLangName() << endl;	//первая строчка - имя языка сохранения
+		Cache << setw(10);						//далее записываем все имена полей классов
+		Cache << Lang::lang[85];
+		Cache << setw(15);
+		Cache << Lang::lang[86];
+		Cache << setw(20);
+		Cache << Lang::lang[87];
+		Cache << setw(30);
+		Cache << Lang::lang[88];
+		Cache << setw(15);
+		Cache << Lang::lang[89];
+		Cache << setw(20);
+		Cache << Lang::lang[90];
+		Cache << setw(20);
+		Cache << Lang::lang[91];
+		Cache << setw(20);
+		Cache << Lang::lang[92];
+		Cache << setw(20);
+		Cache << Lang::lang[93];
+		Cache << setw(20);
+		Cache << Lang::lang[94];
+		Cache << setw(20);
+		Cache << Lang::lang[95];
+		Cache << setw(20);
+		Cache << Lang::lang[96];
+		Cache << setw(20);
+		Cache << Lang::lang[97];
+		Cache << setw(20);
+		Cache << Lang::lang[99];
+		Cache << setw(20);
+		Cache << Lang::lang[100];
+		Cache << setw(25);
+		Cache << Lang::lang[101];
+		Cache << setw(25);
+		Cache << Lang::lang[144];
+		Cache << setw(18);
+		Cache << Lang::lang[145];
+		Cache << setw(18);
+		Cache << Lang::lang[146] << endl;
+		Cache << setw(20);
+
+		//записываем пока не дойдем до конца вектора, хранящего объекты
+		for (int i = 0; i < Flies::devices.size(); i++) {
+			Fly* device = Flies::devices[i];			//выбираем объект
+			int type = device->GetCl();	
+			Cache << setw(10);							
+			Cache << type;								//записываем номер класса
+			Cache.width(15);
+			Cache << device->GetSpeed();				//записываем все значения поля, если значение отсутствует записываем "none"
+			Cache << '|';
+			Cache << setw(20);
+			(device->GetDistance()) ? Cache << device->GetDistance() : Cache << "none";
+			Cache << '|';
+			Cache << setw(29);
+			(device->GetNumOfPass()) ? Cache << device->GetNumOfPass() : Cache << "none";
+			Cache << '|';
+			Cache << setw(14);
+			(device->GetHeight()) ? Cache << device->GetHeight() : Cache << "none";
+			Cache << '|';
+
+			switch (type)
+			{
+			case 2: {
+				helicopter* device = (helicopter*)Flies::devices[i];		//если считанный класс не основной, приводим объект к необходимому типу
+				Cache << setw(19);										//продолжаем запись значений полей
+				Cache << '|';
+				Cache << device->GetNumOfScrew();
+				Cache << setw(19);
+				Cache << '|';
+				Cache << device->GetCapacity();
+				Cache << '|';
+				break;}
+			case 3: {
+				jetfighter* device = (jetfighter*)(Flies::devices[i]);	//если считанный класс не основной, приводим объект к необходимому типу
+				Cache << setw(40);										//продолжаем запись значений полей
+				Cache << '|';
+				Cache << device->getType();
+				Cache << setw(13);
+				Cache << '|';
+				Cache << device->getCountry();
+				Cache << setw(17);
+				Cache << '|';
+				Cache << device->getGuns();
+				Cache << '|';
+				break;
+			}
+			case 4: {
+				bomber* device = (bomber*)(Flies::devices[i]);	//если считанный класс не основной, приводим объект к необходимому типу
+				Cache << setw(100);								//продолжаем запись значений полей
+				Cache << '|';
+				Cache << device->getFmass();
+				Cache << setw(15);
+				Cache << '|';
+				Cache << device->getFradius();
+				Cache << setw(16);
+				Cache << '|';
+				Cache << device->getPtime();
+				Cache << '|';
+				break;
+			}
+			case 5: {
+				plain* device = (plain*)(Flies::devices[i]);		//если считанный класс не основной, приводим объект к необходимому типу
+				Cache << setw(200);									//продолжаем запись значений полей
+				Cache << '|';
+				Cache << device->getCrew();
+				Cache << setw(24);
+				Cache << '|';
+				Cache << device->getEngines();
+				Cache << setw(24);
+				Cache << '|';
+				Cache << device->getAge();
+				Cache << setw(17);
+				Cache << '|';
+				Cache << device->getModel();
+				Cache << '|';
+				break;
+			}
+			case 6: {
+				transportAircraft* device = (transportAircraft*)(Flies::devices[i]);	//если считанный класс не основной, приводим объект к необходимому типу
+				Cache << setw(160);														//продолжаем запись значений полей
+				Cache << '|';
+				Cache << device->getCarrying();
+				Cache << setw(18);
+				Cache << '|';
+				Cache << device->getPrefix();
+				Cache << '|';
+				break;
+			}
+			default:
+				break;
+			}
+
+			Cache << endl;
+
+		}
+		Cache.close();		//если объектов больше нет, закрываем поток
+
+	}
+	else {
+		cout << Lang::lang[84] << endl;		//иначе выводим сообщение о невозможности открыть файл кеша
+		system("pause");
+		_exit(0);
+	}
+
+}
+
+//метод для считывания данных из файла кеша
+vector<Fly*> FCache::getCache() {
+	ifstream Cache(FCache::filename, ios_base::in);		//поток для файлового ввода
+	if (Cache.is_open()) {
+		if (!Cache.eof()) {		//пока не конец файла
+			string temp;
+			string temp22;
+			string temp4;
+			stringstream temp2;
+			stringstream temp3;
+
+			getline(Cache, temp, '\n');				//считывая первую строку определяем язык
+			if (temp != Lang::getLangName() && temp != "") {
+				Lang::setLang(temp);
+			}
+
+			getline(Cache, temp22, '\n');		//считываем следующую строку до символа \n - имена полей
+
+			while (getline(Cache, temp4, '\n')) {	//считываем следующую строку до символа \n - первый объект
+				temp2 << temp4;						//помещаем информацию из строки в stringbuffer
+				//char* t = temp4.c_str();
+
+				string Typee;
+				getline(temp2, Typee, ' ');			//далее считываем информацию до пробела - тип объекта
+				const char* n = Typee.c_str();
+				int type = atoi(n);
+
+				string speedTemp;										//считываем слова до разделителя "|" в порядке их записи
+				getline(temp2, speedTemp, '|');							//и присываиваем временным еременным их значения
+				char *speed = new char[speedTemp.length() + 1];
+				strcpy(speed, speedTemp.c_str());
+				int spd = atoi(speed);
+
+				string heightTemp;
+				getline(temp2, heightTemp, '|');
+				char *height = new char[heightTemp.length() + 1];
+				strcpy(height, heightTemp.c_str());
+				int hei = atoi(height);
+
+				string numTemp;
+				getline(temp2, numTemp, '|');
+				char *numb = new char[numTemp.length() + 1];
+				strcpy(numb, numTemp.c_str());
+				int num = atoi(numb);
+
+				string distTemp;
+				getline(temp2, distTemp, '|');
+				char *distance = new char[distTemp.length() + 1];
+				strcpy(distance, distTemp.c_str());
+				int dist = atoi(distance);
+
+				//в зависимости от типа объекта продолжаем сичтывать поля
+				switch (type) {
+				case 1:
+					Flies::devices.insert(Flies::devices.end(), dynamic_cast<Fly*>(new Fly(spd, dist, num, hei)));	//помещаем объект с полученными полями в вектор
+					Flies::counts[1]++;								//увеличиваем переменную для данного типа объектов
+					Flies::devices[0]->id = 1;
+					break;
+				case 2: {
+					string str = "none";					//продолжаем считывать поля до разделителя "|"
+					string screwTemp = "none";
+					string capacityTemp = "none";
+					if (type == 2) {
+						getline(temp2, str, '|');
+						getline(temp2, screwTemp, '|');
+						getline(temp2, capacityTemp, '|');
+					}
+					if (screwTemp != "none" && capacityTemp != "none") {
+						char *screw = new char[screwTemp.length() + 1];
+						strcpy(screw, screwTemp.c_str());
+						int scr = atoi(screw);
+
+						char *cap = new char[capacityTemp.length() + 1];
+						strcpy(cap, capacityTemp.c_str());
+						int cp = atoi(cap);
+
+						Flies::devices.insert(Flies::devices.end(), dynamic_cast<Fly*>(new helicopter(spd, dist, num, hei, scr, cp)));
+						Flies::counts[2]++;
+						helicopter* device = (helicopter*)Flies::devices[Flies::devices.size() - 1];
+					}
+					break;
+				}
+				case 3: {				
+					string str = "none";				//продолжаем считывать поля до разделителя "|"
+					string TypeTemp = "none";
+					string GunsTemp = "none";
+					string CountryTemp = "none";
+
+					getline(temp2, str, '|');
+					getline(temp2, TypeTemp, '|');
+					TypeTemp.erase(0, 38);
+					getline(temp2, CountryTemp, '|');
+					CountryTemp.erase(0, 10);
+					getline(temp2, GunsTemp, '|');
+					if (CountryTemp != "none" && GunsTemp != "none" && TypeTemp != "none") {
+						string countr;
+						countr = CountryTemp;
+
+						string tp;
+						tp = TypeTemp;
+
+						char *gns = new char[GunsTemp.length() + 1];
+						strcpy(gns, GunsTemp.c_str());
+						int g = atoi(gns);
+						Flies::devices.insert(Flies::devices.end(), dynamic_cast<Fly*>(new jetfighter(spd, dist, num, hei, countr, g, tp)));
+						Flies::counts[3]++;
+						jetfighter* device = (jetfighter*)(Flies::devices[Flies::devices.size() - 1]);
+						break;
+					}
+				}
+				case 4: {
+					string str = "none";				//продолжаем считывать поля до разделителя "|"
+					string massTemp = "none";
+					string radTemp = "none";
+					string timeTemp = "none";
+					if (type == 4) {
+						getline(temp2, str, '|');
+						getline(temp2, radTemp, '|');
+						getline(temp2, massTemp, '|');
+						getline(temp2, timeTemp, '|');
+					}
+					if (radTemp != "none" && massTemp != "none" && timeTemp!= "none") {
+						char *radius = new char[radTemp.length() + 1];
+						strcpy(radius, radTemp.c_str());
+						int rad = atoi(radius);
+
+						char *mass = new char[massTemp.length() + 1];
+						strcpy(mass, massTemp.c_str());
+						int mas = atoi(mass);
+
+						char *time = new char[timeTemp.length() + 1];
+						strcpy(time, timeTemp.c_str());
+						int tm = atoi(time);
+
+						
+						Flies::devices.insert(Flies::devices.end(), dynamic_cast<Fly*>(new bomber(spd, dist, num, hei, rad, mas, tm)));
+						Flies::counts[4]++;
+						bomber* device = (bomber*)(Flies::devices[Flies::devices.size() - 1]);
+
+					}
+					break;
+				}
+				case 5: {
+					string str = "none";				//продолжаем считывать поля до разделителя "|"
+					string crewTemp = "none";
+					string enginesTemp = "none";
+					string modelTemp = "none";
+					string ageTemp = "none";
+					if (type == 5) {
+						getline(temp2, str, '|');
+						getline(temp2, crewTemp, '|');
+						getline(temp2, enginesTemp, '|');
+						getline(temp2, modelTemp, '|');
+						getline(temp2, ageTemp, '|');
+						
+					}
+					if (crewTemp != "none" && enginesTemp != "none" && modelTemp != "none" && ageTemp != "none") {
+
+						char *crew = new char[crewTemp.length() + 1];
+						strcpy(crew, crewTemp.c_str());
+						int crw = atoi(crew);
+						
+						char *engines = new char[enginesTemp.length() + 1];
+						strcpy(engines, enginesTemp.c_str());
+						int eng = atoi(engines);
+
+						char *mode = new char[modelTemp.length() + 1];
+						strcpy(mode, modelTemp.c_str());
+						int mdl = atoi(mode);
+
+						char *age = new char[ageTemp.length() + 1];
+						strcpy(age, ageTemp.c_str());
+						int a = atoi(age);
+
+						Flies::devices.insert(Flies::devices.end(), dynamic_cast<Fly*>(new plain(spd, dist, num, hei, crw, eng, mdl, a)));
+						Flies::counts[5]++;
+						plain* device = (plain*)(Flies::devices[Flies::devices.size() - 1]);
+
+					}
+					break;
+				}
+				case 6: {
+					string str = "none";				//продолжаем считывать поля до разделителя "|"
+					string carrTemp = "none";
+					string prefTemp = "none";
+
+					if (type == 6) {
+						getline(temp2, str, '|');
+						getline(temp2, carrTemp, '|');
+						getline(temp2, prefTemp, '|');
+						prefTemp.erase(0, 17);
+					}
+
+					char *carr = new char[carrTemp.length() + 1];
+					strcpy(carr, carrTemp.c_str());
+					int cr = atoi(carr);
+
+					string pref = prefTemp;
+
+					Flies::devices.insert(Flies::devices.end(), dynamic_cast<Fly*>(new transportAircraft(spd, dist, num, hei, cr, pref)));
+					Flies::counts[6]++;
+					transportAircraft* device = (transportAircraft*)(Flies::devices[Flies::devices.size() - 1]);
+
+					break;
+				}
+				}
+			}
+		}
+
+		Cache.close();			//закрываем поток ввода
+
+	}
+	else {
+		cout << Lang::lang[84] << endl;		//иначе выводим сообщение о невозможнсти работы с файлом
+		system("pause");
+	}
+
+	return Flies::devices;			//возвращаем вектор со считанными объектами
+}
+
+//метод получения имени текущего файла кеша
+string FCache::getCacheName() {
+	return filename;
+}
+
+// fly.cpp
+#include "stdafx.h"
+#include <conio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <iomanip>
+#include "windows.h"
+#include "fly.h"
+#include "lang.h"
+#include "getvalues.h"
+#include "screen.h"
+#include "manager.h"
+
+
+using namespace std;
+//Конструкторы
+Fly::Fly() {
+	cl = 1;					//тип объекта
+	name = "Fly";			//имя типа
+}
+Fly::Fly(int S, int Dis, int Num, int H) {
+	speed = S;
+	distance = Dis;
+	numOfPass = Num;
+	height = H;
+
+	name = "Fly";
+	cl = 1;
+}
+
+//Get методы класса
+int Fly::GetCl()
+{
+	return Fly::cl;
+}
+
+const char *Fly::GetName() {
+	return name;
+}
+
+int Fly::GetDistance() {
+	return distance;
+}
+
+int Fly::GetHeight() {
+	return height;
+}
+
+int Fly::GetNumOfPass() {
+	return numOfPass;
+}
+
+int Fly::GetSpeed() {
+	return speed;
+}
+
+//метод установки дальности полета	
+int Fly::SetDistance() { 			
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+
+	int dist = getInt();
+	do {
+		if (dist < 1 || dist>maxdist)  //сравниваем с максимальной дальностью полета для данного класса
+		{
+			cerr << Lang::lang[31];
+			dist = getInt();
+		}
+		else
+		{
+			distance = dist;
+			return 1;
+		}
+	} while (true);
+
+}
+//метод установки скорости
+int Fly::SetSpeed() { 	
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+
+	int spd = getInt();
+	do {
+		if (spd < 40 || spd>maxspeed)	//сравниваем с максимальной скоростью полета для данного класса
+		{
+			cerr << Lang::lang[31];
+			spd = getInt();
+		}
+		else
+		{
+			speed = spd;
+			return 1;
+		}
+	} while (true);
+
+}
+//метод установки колчества пассажиров
+int Fly::SetNumOfPass() {	
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+
+	int num = getInt();
+	do {
+		if (num < 0 || num>maxpass)		//сравниваем с максимальным колчиеством пассажиров для данного класса
+		{
+			cerr << Lang::lang[31];
+			num = getInt();
+		}
+		else
+		{
+			numOfPass = num;
+			return 1;
+		}
+	} while (true);
+
+}
+//метод установки высоты полета
+int Fly::SetHeight() { 
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+
+	int hei = getInt();
+	do {
+		if (hei < 1000 || hei>maxheight)		//сравниваем с максимальной высотой полета для данного класса
+		{
+			cerr << Lang::lang[31];
+			hei = getInt();
+		}
+		else
+		{
+			height = hei;
+			return 1;
+		}
+	} while (true);
+}
+
+//метод проверки на полет на указанной высоте
+int Fly::IsFlying(int h, Fly f) {	
+	if (h > f.maxheight ){
+		cout << Lang::lang[148] << endl;
+	}
+	else {
+		cout << Lang::lang[147] << endl;
+	}
+	return 0;
+}
+
+//метож проверка на полет на указанную дистанцию
+int Fly::makeFlight(int d, Fly f) {
+	if (d > f.maxdist){
+		cout << Lang::lang[149] << endl;
+	}
+	else {
+		cout << Lang::lang[150] << endl;
+	}
+	return 0;
+}
+
+//Деструкор
+Fly::~Fly() {
+	Flies::DeleteOneFly(this);
+}
+
+//метод вывода данных
+void Fly::print() {
+	system("mode con cols=100");
+	cout << setiosflags(ios::left);
+	cout << setw(30);
+	cout << Lang::lang[86];
+	cout << setw(20);
+	cout << Lang::lang[87];
+	cout << setw(30);
+	cout << Lang::lang[88];
+	cout << setw(20);
+	cout << Lang::lang[89];
+
+	cout.width(30);
+	cout << GetSpeed();
+	cout << setw(20);
+	cout << GetDistance();
+	cout << setw(30);
+	cout << GetNumOfPass();
+	cout << setw(20);
+	cout << GetHeight();
+}
+
+//метод редактирования данных
+void Fly::Edit() {
+	system("cls");
+	bool fl = false;
+	cout << Lang::lang[62] << endl;
+	cout << Lang::lang[63] << endl;
+	cout << Lang::lang[64] << endl;
+	cout << Lang::lang[65] << endl;
+	cout << Lang::lang[66] << endl;
+	cout << Lang::lang[67] << endl;
+	cout << Lang::lang[68] << endl;
+	int k = getInt();
+	do {
+		if (k < 1 || k>6)
+		{
+			cerr << Lang::lang[31];
+			k = getInt();
+		}
+		else
+		{
+			fl = true;
+		}
+	} while (fl != true);
+
+	system("cls");
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+	cout << Lang::lang[98] << endl;
+	switch (k) {
+		//в зависимости от выбора пользователя вызываем необходимый Set метод
+	case 1:
+		SetSpeed();
+		break;
+	case 2:
+		SetDistance();
+		break;
+	case 3:
+		SetHeight();
+		break;
+	case 4:
+		SetNumOfPass();
+		break;
+	case 5:
+		system("cls");
+		cout << Lang::lang[35] << endl;
+		IsFlying(getInt(), *this);
+		system("pause");
+		break;
+	case 6:
+		system("cls");
+		cout << Lang::lang[36] << endl;
+		makeFlight(getInt(), *this);
+		system("pause");
+	}
+
+}
+
+//getvalues.cpp
+#include "stdafx.h"
+#include "getvalues.h"
+#include "lang.h"
+#include "string.h"
+
+//метод для ввода исключительно числовых значений
+int getInt()
+{
+	const char enter = 13;
+	const char backspace = 8;
+	bool input = false;
+	char c = '\0';
+	string str;
+	int i = 0;
+	while (c != enter)
+	{
+		c = _getch();
+
+		if (c >= '0' && c <= '9')		//вводу подлажат цифры
+		{
+			str += c;
+			input = true;
+			cout << c;
+			i++;
+		}
+		else if (c == '-' && !input)
+		{
+			str += c;
+			input = true;
+			cout << c;
+			i++;
+		}
+		else if (c == backspace && input)	//а также возможно стирать написанное
+		{
+			str.resize(str.size() - 1);
+			cout << "\b \b";
+			if (str.size() == 0)
+				input = false;
+			i--;
+		}
+	}
+	cout << endl;
+	if (str.length() > 0) {
+		if (str.length() != 1) {
+			return stoi(str);
+
+		}
+		else if (str[0] != '-') {
+			return stoi(str);
+		}
+		else {
+			return 0;
+		}
+	}
+	else {
+		return 0;
+	}
+}
+
+//метод для ввода буквенных значений
+char* getChar() {
+
+	const char enter = 13;
+	const char pr = 32;
+	const char backspace = 8;
+	bool input = false;
+	char c = '\0';
+	string str;
+	int i = 0;
+	bool fl = false;
+	char* s;
+	while (c != enter)
+	{
+		c = _getch();
+
+		if ((strcmp((Lang::getLangName()).c_str(), "eng")) == 0) {	//для английской локализации 
+			fl = true;												//предусматриваем ввод только английских букв
+			
+		}
+		else {
+			fl = false;
+		}
+
+		if (fl == true) {
+			if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
+			{
+				str += c;
+				input = true;
+				cout << c;
+				i++;
+			}
+			else if (c == pr && input) {
+				str += c;
+				input = true;
+				cout << " ";
+				i++;
+			}
+
+			else if (c == '-' && !input)
+			{
+				str += c;
+				input = true;
+				cout << c;
+				i++;
+			}
+			else if (c == backspace && input)
+			{
+				str.resize(str.size() - 1);
+				cout << "\b \b";
+				if (str.size() == 0)
+					input = false;
+				i--;
+			}
+		}
+
+		else {
+			if ((c >= 'А' && c <= 'Я') || (c >= 'а' && c <= 'я'))	//для русской локализации - русские буквы
+			{
+				str += c;
+				input = true;
+				cout << c;
+				i++;
+			}
+			else if (c == pr && input) {
+				str += c;
+				input = true;
+				cout << " ";
+				i++;
+			}
+
+			else if (c == '-' && !input)
+			{
+				str += c;
+				input = true;
+				cout << c;
+				i++;
+			}
+			else if (c == backspace && input)		//предусматриваем возможность стирания написанного
+			{
+				str.resize(str.size() - 1);
+				cout << "\b \b";
+				if (str.size() == 0)
+					input = false;
+				i--;
+			}
+		}
+	}
+	cout << endl;
+	s = new char[i];
+	strcpy(s, str.c_str());
+	return s;
+}
+
+//метод для ввода строковых значений
+string getstr() {
+
+	const char enter = 13;
+	const char pr = 32;
+	const char backspace = 8;
+	bool input = false;
+	char c = '\0';
+	string str;
+	int i = 0;
+	bool fl = false;
+	char* s;
+	while (c != enter)
+	{
+		c = _getch();
+
+		if ((strcmp((Lang::getLangName()).c_str(), "eng")) == 0) {
+			fl = true;
+		}
+		else {
+			fl = false;
+		}
+
+		if (fl == true) {
+			if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))	//только английские для англ. локализации
+			{
+				str += c;
+				input = true;
+				cout << c;
+				i++;
+			}
+			else if (c == pr && input) {
+				str += c;
+				input = true;
+				cout << " ";
+				i++;
+			}
+
+			else if (c == '-' && !input)
+			{
+				str += c;
+				input = true;
+				cout << c;
+				i++;
+			}
+			else if (c == backspace && input)
+			{
+				str.resize(str.size() - 1);
+				cout << "\b \b";
+				if (str.size() == 0)
+					input = false;
+				i--;
+			}
+		}
+
+		else {
+			if ((c >= 'А' && c <= 'Я') || (c >= 'а' && c <= 'я'))		//только русские для рус. локализации
+			{
+				str += c;
+				input = true;
+				cout << c;
+				i++;
+			}
+			else if (c == pr && input) {
+				str += c;
+				input = true;
+				cout << " ";
+				i++;
+			}
+
+			else if (c == '-' && !input)
+			{
+				str += c;
+				input = true;
+				cout << c;
+				i++;
+			}
+			else if (c == backspace && input)
+			{
+				str.resize(str.size() - 1);
+				cout << "\b \b";
+				if (str.size() == 0)
+					input = false;
+				i--;
+			}
+		}
+	}
+	cout << endl;
+	return str;
+}
+//helicopter.cpp
+#include "stdafx.h"
+#include <conio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <iomanip>
+#include "helicopter.h"
+#include "fly.h"
+#include "windows.h"
+#include "lang.h"
+#include "getvalues.h"
+
+using namespace std;
+
+//Конструкторы
+helicopter::helicopter() {
+	cl = 2;
+	name = "helicopter";
+	Fuel = capacity;
+}
+
+helicopter::helicopter(int S, int Dis, int num, int H, int numS, int Cap) {
+	speed = S;
+	distance = Dis;
+	numOfPass = num;
+	height = H;
+	numOfScrew = numS;
+	capacity = Cap;
+
+	cl = 2;
+	name = "helicopter";
+	Fuel = capacity;
+}
+
+//Get методы класса
+int helicopter::GetNumOfScrew() {
+	return numOfScrew;
+}
+
+int helicopter::GetCapacity() {
+	return capacity;
+}
+
+//метод установки объема топливного бака
+int helicopter::SetCapacity() {
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+
+	int cap = getInt();
+	do {
+		if (cap < 200 || cap > 11600)	//сравниваем с максимальным/минимальным объемом топливного бака вертолета
+		{
+			cerr << Lang::lang[31];
+			cap = getInt();
+		}
+		else
+		{
+			capacity = cap;
+			return 1;
+		}
+	} while (true);
+
+}
+
+//матод установки количества винтов
+int helicopter::SetNumOfScrew() {
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+
+	int ns = getInt();
+	do {
+		if (ns < 1 || ns > 4)		//вертолет имеет от 1 до 4 винтов
+		{
+			cerr << Lang::lang[31];
+			ns = getInt();
+		}
+		else
+		{
+			numOfScrew = ns;
+			return 1;
+		}
+	} while (true);
+
+}
+
+//метод заправки топливного бака
+int helicopter::AddFuel(int F)
+{
+	if (Fuel == capacity){		//если бак полон оповещаем об этом
+		return 1;
+	}
+	else {
+		if (Fuel + F <= capacity) {
+			Fuel = Fuel + F;				//иначе добавляем к текущему топливу указанное количество
+			return 0;
+		}
+		else {
+			cout << Lang::lang[156] << endl;
+			return 1;
+		}
+	}
+}
+
+// перегруженный оператор ~ Новое действие - сброс топлива
+int helicopter::operator~()
+{
+	if (Fuel != 0) {	//если бак не пуст, опустошаем
+		Fuel = 0;
+		cout << Lang::lang[154] << endl;
+	}
+	else {
+		cout << Lang::lang[155] << endl;	//иначе оповещаем о том, что бак уже пуст
+	}
+	return 0;
+}
+//метод установки дальности полета	
+int helicopter::SetDistance() {
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+
+	int dist = getInt();
+	do {
+		if (dist < 1 || dist>maxdist)  //сравниваем с максимальной дальностью полета для данного класса
+		{
+			cerr << Lang::lang[31];
+			dist = getInt();
+		}
+		else
+		{
+			distance = dist;
+			return 1;
+		}
+	} while (true);
+
+}
+//метод установки скорости
+int helicopter::SetSpeed() {
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+
+	int spd = getInt();
+	do {
+		if (spd < 40 || spd>maxspeed)	//сравниваем с максимальной скоростью полета для данного класса
+		{
+			cerr << Lang::lang[31];
+			spd = getInt();
+		}
+		else
+		{
+			speed = spd;
+			return 1;
+		}
+	} while (true);
+
+}
+//метод установки колчества пассажиров
+int helicopter::SetNumOfPass() {
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+
+	int num = getInt();
+	do {
+		if (num < 0 || num>maxpass)		//сравниваем с максимальным колчиеством пассажиров для данного класса
+		{
+			cerr << Lang::lang[31];
+			num = getInt();
+		}
+		else
+		{
+			numOfPass = num;
+			return 1;
+		}
+	} while (true);
+
+}
+//метод установки высоты полета
+int helicopter::SetHeight() {
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+
+	int hei = getInt();
+	do {
+		if (hei < 1000 || hei>maxheight)		//сравниваем с максимальной высотой полета для данного класса
+		{
+			cerr << Lang::lang[31];
+			hei = getInt();
+		}
+		else
+		{
+			height = hei;
+			return 1;
+		}
+	} while (true);
+}
+//Деструктор
+helicopter::~helicopter() {
+
+}
+
+//метод вывода данных аппарата
+void helicopter::print() {
+	system("mode con cols=140");
+	cout << setiosflags(ios::left);
+	cout << setw(30);
+	cout << Lang::lang[86];
+	cout << setw(20);
+	cout << Lang::lang[87];
+	cout << setw(30);
+	cout << Lang::lang[88];
+	cout << setw(20);
+	cout << Lang::lang[89];
+	cout << setw(20);
+	cout << Lang::lang[90];
+	cout << setw(20);
+	cout << Lang::lang[91];
+
+	cout.width(30);
+	cout << GetSpeed();
+	cout << setw(20);
+	cout << GetDistance();
+	cout << setw(30);
+	cout << GetNumOfPass();
+	cout << setw(20);
+	cout << GetHeight();
+	cout << setw(20);
+	cout << GetNumOfScrew();
+	cout << setw(20);
+	cout << GetCapacity();
+}
+
+//метод редактирования данных
+void helicopter::Edit() {
+	system("cls");
+	bool fl = false;
+	cout << Lang::lang[62] << endl;
+	cout << Lang::lang[63] << endl;
+	cout << Lang::lang[64] << endl;
+	cout << Lang::lang[65] << endl;
+	cout << Lang::lang[69] << endl;
+	cout << Lang::lang[70] << endl;
+	int k = getInt();
+	do {
+		if (k < 1 || k>6)
+		{
+			cerr << Lang::lang[31];
+			k = getInt();
+		}
+		else
+		{
+			fl = true;
+		}
+	} while (fl != true);
+
+	system("cls");
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+	cout << Lang::lang[98] << endl;
+	switch (k) {
+		//в зависимости от выбора пользователя вызываем необходимый Set метод
+	case 1:
+		SetSpeed();
+		break;
+	case 2:
+		SetDistance();
+		break;
+	case 3:
+		SetHeight();
+		break;
+	case 4:
+		SetNumOfPass();
+		break;
+	case 5:
+		system("cls");
+		cout << Lang::lang[151] << endl;
+		if (AddFuel(getInt()) == 1) {
+			cout << Lang::lang[153] << endl;
+		}
+		else {
+			cout << Lang::lang[152] << endl;
+		}
+		system("pause");
+		break;
+	case 6:
+		system("cls");
+		this->operator~();
+		system("pause");
+	}
+}
+// lang.cpp
+#include "stdafx.h"
+#include "lang.h"
+#include <fstream>
+#include <iostream>
+#include <sstream> 
+using namespace std;
+
+map <int, string> Lang::lang;	//объект типа map принимающий в качестве параметров номер строки в файле
+								//и саму строку по данному номеру
+string Lang::langName;
+string Lang::ln2;
+string Lang::ln1;
+
+//метод установки языка
+void Lang::setLang(string name) {
+	Lang::langName = name;
+	name = name + ".txt";		//текущий язык устанавливается на основе названия файла локализации
+	char * filename = new char[name.length() + 1];
+	strcpy(filename, name.c_str());
+}
+
+//метод получение текущего языка
+string Lang::getLangName() {
+	return Lang::langName;
+}
+
+//метод для открытия файла локализации
+string Lang::setLangFile(string filename) {
+
+	ifstream fin;
+	fin.exceptions(ios::badbit); // проверка исключения плохой бит
+	try {
+		fin.open(filename); // попытка открытия файла 
+		string temp;
+		Lang::lang.clear();
+		for (int i = 1; getline(fin, temp, '\n'); i++) {
+			Lang::lang[i] = temp;
+		}
+		fin.close(); 
+	}
+	catch (std::exception const& e) { // если не открывается
+		system("cls");
+		cout << "ERROR: Language file can't open/Невозможно открыть файл локализации. \n";
+		system("pause");
+		_exit(0);
+	}
+	return (filename);
+}
+
+//метод установки имени файла локализации
+void Lang::setLangFilename() {
+	//system("cls");
+
+	string newname;
+	cout << Lang::lang[141] << endl;
+	cin >> newname;
+	setLangFile(newname);
+	ifstream newlocal(newname, ios_base::in);
+	newlocal.open(newname);
+	if (newlocal.is_open()) {
+		cout << Lang::lang[142] << endl;
+		system("pause");
+	}
+}
+
+//метод проверки целостности файла локализации
+void Lang::check() {
+	int a = 0;
+	system("mode con cols=80 lines=20");
+	if (Lang::lang.size()<0) {				//если размер файла <0 - файл поврежден
+		cout << "Файл локализации поврежден/Localization file is damaged" << endl;
+		system("pause");
+		_exit(0);
+	}
+	for (int i = 1; i<165; i++) {
+		a++;
+		if (Lang::lang[i] == " ") {
+			cout << "Файл локализации поврежден/Localization file is damaged" << endl;
+			system("pause");
+			_exit(0);
+		}
+	}
+	if (a < 164) {
+		cout << "Файл локализации поврежден/Localization file is damaged" << endl;
+		system("pause");
+		_exit(0);
+	}
+}
+
+// main.cpp
+// Fly.cpp: определяет точку входа для консольного приложения.
+//
+
+#include "stdafx.h"
+#include "conio.h"
+#include "windows.h"
+#include "ctime"
+#include "screen.h"
+#include "lang.h"
+#include "Cache.h"
+#include <iostream>
+#include <fstream>
+
+
+int main()
+{
+	SetConsoleCP(1251);
+	SetConsoleOutputCP(1251);			//задание кодировки
+	system("mode con cols=90 lines=20");//задание размеров окна консоли
+	system("title Курсовая работа. Вариант 13");
+
+	string cachename;	//переменная для имени файла кеша
+	string engname;		//переменная имени файла англ. локализации
+	string rusname;		//переменная имени файла рус. локализации
+
+	cout << "Введите путь к файлу локализации 1:(русский язык) | Enter the name of first localization file (russian)" << endl;
+	cin >> rusname;
+	Lang::check();
+	cout << "Введите путь к файлу локализации 2:(английский язык) | Enter the name of second localization file (english)" << endl;
+	cin >> engname;
+	Lang::check();
+
+	FCache::setCacheFilename("data\\data.txt");
+	Lang::setLangFile(rusname);
+	Lang::setLang("rus");
+
+	Lang::ln2 = engname;
+	Lang::ln1 = rusname;
+
+	Screens screen;
+	screen.MainScreen(1);		//запускаем "Главный экран программы"
+
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 100, false };
+	SetConsoleCursorInfo(hCons, &cursor);			//применение заданных параметров курсора
+
+	system("pause");
+    return 0;
+}
+
+//manager.cpp
+#include "stdafx.h"
+#include "fly.h"
+#include "manager.h"
+#include <algorithm>
+#include "Cache.h"
+vector <Fly*> Flies::devices;
+map <int, int> Flies::counts;
+
+//метод добавления объекта в вектор
+int Flies::AddFly(Fly* Fly) {
+	Flies::counts[Fly->GetCl()]++;	//увеличиваем размерность вектора
+	Flies::devices.insert(Flies::devices.end(), Fly);	//добавляем новый объект в конец
+	return Flies::devices.size();	//возвращаем текущую размерность вектора
+}
+
+//метод очистки вектора (удаление всех объектов)
+void Flies::DeleteAllFlies() {
+	for (int i = 0; i<Flies::devices.size(); i++)
+		delete Flies::devices[i];	//удаляем каждый объект отдельно
+	Flies::devices.clear();			//очищаем вектор
+	Flies::counts.clear();			//обнуляем переменные для каждого класса
+	FCache::saveCache();			//сохраняем текущее состояние в кеш
+}
+
+//метод для удаления одного объекта
+void Flies::DeleteOneFly(Fly* e) {
+	auto F = find(devices.begin(), devices.end(), e);	//ищем в векторе заданный объект
+	if (F != devices.end()) {
+		devices.erase(F);		//удаляем
+	}
+	Flies::counts[e->GetCl()]--;	//уменьшаем размерность вектора
+	FCache::saveCache();			//сохраняем изменения
+}
+
+
+
+//plain.cpp
+#include "stdafx.h"
+#include <conio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <iomanip>
+#include "windows.h"
+#include "fly.h"
+#include "plain.h"
+#include "lang.h"
+#include "getvalues.h"
+#include "screen.h"
+
+using namespace std;
+
+//Конструкторы
+plain::plain() {
+	cl = 5;
+	name = "Plain";
+}
+
+plain::plain(int S, int Dis, int Num, int H, int cr, int eng, int a, int m) {
+	speed = S;
+	height = H;
+	distance = Dis;
+	numOfPass = Num;
+	crew = cr;
+	engines = eng;
+	age = a;
+	model = m;
+
+	cl = 5;
+	name = "Plain";
+}
+
+//Деструктор
+plain::~plain() {
+
+}
+
+//Get методы класса
+int plain::getAge() {
+	return age;
+}
+
+int plain::getCrew() {
+	return crew;
+}
+
+int plain::getModel() {
+	return model;
+}
+
+int plain::getEngines() {
+	return engines;
+}
+
+//метод установки срока эксплуатации самолета
+int plain::setAge() {
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+
+	int a = getInt();
+	do {
+		if (a < 0 || a > 15)
+		{
+			cerr << Lang::lang[31];
+			a = getInt();
+		}
+		else
+		{
+			age = a;
+			return 1;
+		}
+	} while (true);
+
+}
+
+//метод установки количества двигателей
+int plain::setEngines() {
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+
+	int en = getInt();
+	do {
+		if (en < 2 || en > 8)
+		{
+			cerr << Lang::lang[31];
+			en = getInt();
+		}
+		else
+		{
+			engines = en;
+			return 1;
+		}
+	} while (true);
+
+}
+
+//метод установки модели самолета
+int plain::setModel() {
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+
+	int mod = getInt();
+	do {
+		if (mod < 100 || mod>999)
+		{
+			cerr << Lang::lang[31];
+			mod = getInt();
+		}
+		else
+		{
+			model = mod;
+			return 1;
+		}
+	} while (true);
+
+}
+
+//метод установки численности экипажа
+int plain::setCrew() {
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+
+	int cr = getInt();
+	do {
+		if (cr < 2 || cr>15)
+		{
+			cerr << Lang::lang[31];
+			cr = getInt();
+		}
+		else
+		{
+			crew = cr;
+			return 1;
+		}
+	} while (true);
+}
+
+//метод установки дальности полета	
+int plain::SetDistance() {
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+
+	int dist = getInt();
+	do {
+		if (dist < 1 || dist>maxdist)  //сравниваем с максимальной дальностью полета для данного класса
+		{
+			cerr << Lang::lang[31];
+			dist = getInt();
+		}
+		else
+		{
+			distance = dist;
+			return 1;
+		}
+	} while (true);
+
+}
+//метод установки скорости
+int plain::SetSpeed() {
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+
+	int spd = getInt();
+	do {
+		if (spd < 40 || spd>maxspeed)	//сравниваем с максимальной скоростью полета для данного класса
+		{
+			cerr << Lang::lang[31];
+			spd = getInt();
+		}
+		else
+		{
+			speed = spd;
+			return 1;
+		}
+	} while (true);
+
+}
+//метод установки колчества пассажиров
+int plain::SetNumOfPass() {
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+
+	int num = getInt();
+	do {
+		if (num < 0 || num>maxpass)		//сравниваем с максимальным колчиеством пассажиров для данного класса
+		{
+			cerr << Lang::lang[31];
+			num = getInt();
+		}
+		else
+		{
+			numOfPass = num;
+			return 1;
+		}
+	} while (true);
+
+}
+//метод установки высоты полета
+int plain::SetHeight() {
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+
+	int hei = getInt();
+	do {
+		if (hei < 1000 || hei>maxheight)		//сравниваем с максимальной высотой полета для данного класса
+		{
+			cerr << Lang::lang[31];
+			hei = getInt();
+		}
+		else
+		{
+			height = hei;
+			return 1;
+		}
+	} while (true);
+}
+
+
+//перегруженный как дружестенный метод оператор ++ Новое действие - повышение срока эксплуатации самолета
+plain& operator++(plain& t)
+{
+	if (t.age == 14)
+	{
+		cout << Lang::lang[71] << "\n" << endl;
+		return t;
+	}
+	else
+	{
+		++t.age;
+		cout << Lang::lang[72] << "\n" << endl;
+		return t;
+	}
+}
+
+//метод вывода данных об объекте
+void plain::print() {
+	system("mode con cols=166");
+	cout << setiosflags(ios::left);
+	cout << setw(15);
+	cout << Lang::lang[86];
+	cout << setw(20);
+	cout << Lang::lang[87];
+	cout << setw(30);
+	cout << Lang::lang[88];
+	cout << setw(15);
+	cout << Lang::lang[89];
+	cout << setw(25);
+	cout << Lang::lang[101];
+	cout << setw(25);
+	cout << Lang::lang[144];
+	cout << setw(18);
+	cout << Lang::lang[145];
+	cout << setw(18);
+	cout << Lang::lang[146];
+
+	cout.width(15);
+	cout << GetSpeed();
+	cout << setw(20);
+	cout << GetDistance();
+	cout << setw(30);
+	cout << GetNumOfPass();
+	cout << setw(15);
+	cout << GetHeight();
+	cout << setw(25);
+	cout << getCrew();
+	cout << setw(25);
+	cout << getEngines();
+	cout << setw(18);
+	cout << getAge();
+	cout << setw(18);
+	cout << getModel();
+}
+
+//метод редактирования данных об объекте
+void plain::Edit() {
+	system("cls");
+	bool fl = false;
+	cout << Lang::lang[62] << endl;
+	cout << Lang::lang[63] << endl;
+	cout << Lang::lang[64] << endl;
+	cout << Lang::lang[65] << endl;
+	cout << Lang::lang[157] << endl;
+	cout << Lang::lang[158] << endl;
+	cout << Lang::lang[159] << endl;
+	cout << Lang::lang[160] << endl;
+	cout << Lang::lang[161] << endl;
+	cout << Lang::lang[68] << endl;
+	int k = getInt();
+	do {
+		if (k < 1 || k>9)
+		{
+			cerr << Lang::lang[31];
+			k = getInt();
+		}
+		else
+		{
+			fl = true;
+		}
+	} while (fl != true);
+
+	system("cls");
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+	cout << Lang::lang[98] << endl;
+	switch (k) {
+		//в зависимости от выбора пользователя вызываем необходимый Set метод
+	case 1:
+		SetSpeed();
+		break;
+	case 2:
+		SetDistance();
+		break;
+	case 3:
+		SetHeight();
+		break;
+	case 4:
+		SetNumOfPass();
+		break;
+	case 5:
+		setAge();
+		break;
+	case 6:
+		setCrew();
+		break;
+	case 7:
+		setEngines();
+		break;
+	case 8:
+		setModel();
+		break;
+	case 9:
+		operator++(*this);
+		break;
+	}
+
+}
+
+
+//screen.cpp
+#include "stdafx.h"
+#include "conio.h"
+#include "windows.h"
+#include <iostream>
+#include <iomanip>
+#include "screen.h"
+#include "lang.h"
+#include "fly.h"
+#include "helicopter.h"
+#include "jetfighter.h"
+#include "bomber.h"
+#include "plain.h"
+#include "transportAircraft.h"
+#include <ctime>
+#include "manager.h"
+#include "getvalues.h"
+#include <string.h>
+#include <fstream>
+#include "Cache.h"
+
+
+#pragma warning(disable : 4996) //_CRT_SECURE_NO_WARNINGS
+
+//метод рендеринга меню
+void Screens::renderMenu(map <int, string> menu, int action) {
+
+	cout << "\n\n\n\n";
+	for (int i = 0; i<menu.size(); i++) {
+		if (i != 0) cout << "\n\n";
+		cout << "                           ";
+		(i + 1 == action) ? cout << "--" : cout << "  ";		//перемещаем т.н. указатель между пунктами 
+		cout << "  " << menu[i] << "";
+	}
+	cout << "\n\n\n\n";
+}
+
+//меню изменения языка
+void Screens::LanguageScreen1(int menu) {
+	system("title Курсовая работа. Вариант 13. Сменить язык./Course work. Variant 13. Change language.");
+	system("cls");
+	system("mode con lines=10");
+
+	map <int, string> nav;
+	nav[0] = "русский";
+	nav[1] = "english";
+	renderMenu(nav, menu);
+
+
+	int choice = _getch();
+	if (choice == 224)
+		choice = _getch();
+	if (choice == 72)
+		if (menu != 1)
+			LanguageScreen1(menu - 1);
+		else
+			LanguageScreen1(nav.size());
+	if (choice == 80)
+		if (menu != nav.size())
+			LanguageScreen1(menu + 1);
+		else
+			LanguageScreen1(1);
+	if (choice == 13 || choice == 32) {
+		if (menu == 1) {
+			Lang::setLangFile(Lang::ln1);
+
+			MainScreen(1);
+		}
+		if (menu == 2) {
+			Lang::setLangFile(Lang::ln2);
+			
+			MainScreen(1);
+		}
+	}
+	else {
+		LanguageScreen1(1);
+	}
+}
+
+//меню изменения языка
+void Screens::LanguageScreen2(int menu) {
+	system("title Курсовая работа. Вариант 13. Сменить язык./Course work. Variant 13. Change language.");
+	system("cls");
+	system("mode con lines=10");
+
+	map <int, string> nav;
+	nav[0] = "русский";
+	nav[1] = "english";
+	renderMenu(nav, menu);
+
+	int choice = _getch();
+	if (choice == 224)
+		choice = _getch();
+	if (choice == 72)
+		if (menu != 1)
+			LanguageScreen2(menu - 1);
+		else
+			LanguageScreen2(nav.size());
+	if (choice == 80)
+		if (menu != nav.size())
+			LanguageScreen2(menu + 1);
+		else
+			LanguageScreen2(1);
+	if (choice == 13 || choice == 32) {
+		if (menu == 1) {
+			Lang::setLangFile(Lang::ln1);
+
+			DemonstrationScreen(1);
+		}
+		if (menu == 2) {
+			Lang::setLangFile(Lang::ln2);
+
+			DemonstrationScreen(1);
+		}
+	}
+	else {
+		LanguageScreen2(1);
+	}
+}
+
+//меню изменения языка
+void Screens::LanguageScreen3(int menu) {
+	system("title Курсовая работа. Вариант 13. Сменить язык./Course work. Variant 13. Change language.");
+	system("cls");
+	system("mode con lines=10");
+
+	map <int, string> nav;
+	nav[0] = "русский";
+	nav[1] = "english";
+	renderMenu(nav, menu);
+
+	int choice = _getch();
+	if (choice == 224)
+		choice = _getch();
+	if (choice == 72)
+		if (menu != 1)
+			LanguageScreen3(menu - 1);
+		else
+			LanguageScreen3(nav.size());
+	if (choice == 80)
+		if (menu != nav.size())
+			LanguageScreen3(menu + 1);
+		else
+			LanguageScreen3(1);
+	if (choice == 13 || choice == 32) {
+		if (menu == 1) {
+			Lang::setLangFile(Lang::ln1);
+
+			WorkScreen(1);
+		}
+		if (menu == 2) {
+			Lang::setLangFile(Lang::ln2);
+
+			WorkScreen(1);
+		}
+	}
+	else {
+		LanguageScreen3(1);
+	}
+}
+
+//меню изменения языка
+void Screens::LanguageScreen4(int menu) {
+	system("title Курсовая работа. Вариант 13. Сменить язык./Course work. Variant 13. Change language.");
+	system("cls");
+	system("mode con lines=10");
+
+	map <int, string> nav;
+	nav[0] = "русский";
+	nav[1] = "english";
+	renderMenu(nav, menu);
+
+	int choice = _getch();
+	if (choice == 224)
+		choice = _getch();
+	if (choice == 72)
+		if (menu != 1)
+			LanguageScreen4(menu - 1);
+		else
+			LanguageScreen4(nav.size());
+	if (choice == 80)
+		if (menu != nav.size())
+			LanguageScreen4(menu + 1);
+		else
+			LanguageScreen4(1);
+	if (choice == 13 || choice == 32) {
+		if (menu == 1) {
+			Lang::setLangFile(Lang::ln1);
+
+			ManagerScreen(1);
+		}
+		if (menu == 2) {
+			Lang::setLangFile(Lang::ln2);
+
+			ManagerScreen(1);
+		}
+	}
+	else {
+		LanguageScreen4(1);
+	}
+}
+
+//меню изменения языка
+void Screens::LanguageScreen5(int menu) {
+	system("title Курсовая работа. Вариант 13. Сменить язык./Course work. Variant 13. Change language.");
+	system("cls");
+	system("mode con lines=10");
+
+	map <int, string> nav;
+	nav[0] = "русский";
+	nav[1] = "english";
+	renderMenu(nav, menu);
+
+	int choice = _getch();
+	if (choice == 224)
+		choice = _getch();
+	if (choice == 72)
+		if (menu != 1)
+			LanguageScreen5(menu - 1);
+		else
+			LanguageScreen5(nav.size());
+	if (choice == 80)
+		if (menu != nav.size())
+			LanguageScreen5(menu + 1);
+		else
+			LanguageScreen5(1);
+	if (choice == 13 || choice == 32) {
+		if (menu == 1) {
+			Lang::setLangFile(Lang::ln1);
+
+			HelpScreen(1);
+		}
+		if (menu == 2) {
+			Lang::setLangFile(Lang::ln2);
+
+			HelpScreen(1);
+		}
+	}
+	else {
+		LanguageScreen5(1);
+	}
+}
+
+//главный экран
+void Screens::MainScreen(int menu) {
+	system("title Курсовая работа. Вариант 13.Глaвное меню/Course work. Variant 13. Main menu.");
+	system("CLS");
+	system("mode con lines=30");
+
+
+	cout << endl;
+	cout << "                " << Lang::lang[4] << endl;
+	cout << "                " << Lang::lang[5] << endl;
+	cout << "                " << Lang::lang[6] << endl;
+	cout << "                " << Lang::lang[7] << endl;
+	cout << "                " << Lang::lang[8] << endl;
+	cout << "                " << Lang::lang[9] << endl;
+	cout << endl;
+	cout << "                " << Lang::lang[10] << endl;
+	cout << "                    " << Lang::lang[11] << endl;
+	cout << "                    " << Lang::lang[12] << endl;
+	cout << endl;
+	cout << "                " << Lang::lang[13] << endl;
+
+	map <int, string> nav;
+	nav[0] = Lang::lang[104];
+	nav[1] = Lang::lang[16];
+	nav[2] = Lang::lang[2];				//формирование меню из файла локализации
+	nav[3] = Lang::lang[3];
+	renderMenu(nav, menu);
+
+	int choice = _getch();
+	if (choice == 224)
+		choice = _getch();
+	if (choice == 72)
+		if (menu != 1)
+			MainScreen(menu - 1);
+		else
+			MainScreen(nav.size());
+	if (choice == 80)
+		if (menu != nav.size())
+			MainScreen(menu + 1);
+		else
+			MainScreen(1);
+	if (choice == 13 || choice == 32) {
+		switch (menu) {
+		case 1: DemonstrationScreen(1); break;		//переход к работе
+		case 2: HelpScreen(1); break;				//меню помощи
+		case 3: LanguageScreen1(1); break;			//сменить язык
+		case 4: _exit(0); break;					//выход
+		}
+	}
+	else {
+		MainScreen(1);								//нажатие любых клавиш приводит к перезагрузке текущего экрана 
+	}
+}
+
+//рабочий экран
+void Screens::DemonstrationScreen(int menu) {
+	system("title Курсовая работа. Вариант 13. Меню добавления./Course work. Variant 13. Add menu.");
+	system("CLS");
+	system("mode con lines=30");
+
+	map <int, string> nav;
+	nav[0] = Lang::lang[17];			
+	nav[1] = Lang::lang[18];
+	nav[2] = Lang::lang[45];						//формирование меню из файла локализации
+	nav[3] = Lang::lang[2];
+	nav[4] = Lang::lang[14];
+	nav[5] = Lang::lang[3];										
+
+	renderMenu(nav, menu);
+
+	int choice = _getch();
+	if (choice == 224)
+		choice = _getch();
+	if (choice == 72)
+		if (menu != 1)
+			DemonstrationScreen(menu - 1);
+		else
+			DemonstrationScreen(nav.size());
+	if (choice == 80)
+		if (menu != nav.size())
+			DemonstrationScreen(menu + 1);
+		else
+			DemonstrationScreen(1);
+	if (choice == 13 || choice == 32) {
+		if (menu == 1) {
+			ListScreen(1);				//просмотр списка лет. аппаратов
+		}
+		if (menu == 2) {
+			WorkScreen(1);				//меню добавления
+		}
+		if (menu == 3) {
+			ManagerScreen(1);			//меню управления
+		}
+		if (menu == 4) {
+			LanguageScreen2(1);			//сменить язык
+		}
+		if (menu == 5) {
+			MainScreen(1);				//вернуться к главному экрану
+		}
+		if (menu == 6) {
+			_exit(0);					//выход
+		}
+	}
+	else {
+		DemonstrationScreen(1);
+	}
+}
+
+//просмотр списка ле. аппаратов
+void Screens::ListScreen(int menu) {
+	system("title Курсовая работа. Вариант 13. Список летательных аппаратов./Course work. Variant 13. List.");
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, false };
+	SetConsoleCursorInfo(hCons, &cursor);
+
+	system("CLS");
+	system("mode con lines=30 cols=100");
+	cout << "----------------------"
+		<< Lang::lang[134]
+		<< "-----------------------" << endl;
+	for (int i = 0; i < Flies::devices.size(); i++) {
+
+		cout << "\n" << "[" << i << "] - " << Flies::devices[i]->GetName();		//отображаем списко аппаратов в порядке их добавления
+	}
+
+	if (Flies::devices.size() == 0) {
+		cout << endl << Lang::lang[28] << "\n";
+		system("pause");
+		DemonstrationScreen(1);
+	}
+	else {
+
+		HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+		CONSOLE_CURSOR_INFO cursor = { 1, true };
+		SetConsoleCursorInfo(hCons, &cursor);
+		cout << endl << endl << "Выберите летательный аппарат:/Choose the device" << " ";
+		int key = getInt();
+
+		if (key >= (Flies::devices.size())) {
+			cout << "no";
+		}
+		else {
+			EditScreen(1, key);
+		}
+	}
+
+	map <int, string> nav;
+	nav[0] = Lang::lang[14];
+	renderMenu(nav, menu);
+
+	int choice = _getch();
+	if (choice == 224)
+		choice = _getch();
+	if (choice == 13 || choice == 32) {
+		if (menu != nav.size())
+			DemonstrationScreen(menu + 1);
+		else
+			DemonstrationScreen(1);
+		_exit(0);
+	}
+	else {
+		ListScreen(1);
+	}
+	
+}
+
+//меню добавления
+void Screens::WorkScreen(int menu) {
+	system("CLS");
+	system("mode con lines=30");
+
+	map <int, string> nav;
+	nav[0] = Lang::lang[20];
+	nav[1] = Lang::lang[21];
+	nav[2] = Lang::lang[23];
+	nav[3] = Lang::lang[24];
+	nav[4] = Lang::lang[25];				//формирование меню из файла локализации
+	nav[5] = Lang::lang[22];
+	nav[6] = Lang::lang[2];
+	nav[7] = Lang::lang[14];
+	nav[8] = Lang::lang[3];
+
+	renderMenu(nav, menu);
+
+	int choice = _getch();
+	if (choice == 224)
+		choice = _getch();
+	if (choice == 72)
+		if (menu != 1)
+			WorkScreen(menu - 1);
+		else
+			WorkScreen(nav.size());
+	if (choice == 80)
+		if (menu != nav.size())
+			WorkScreen(menu + 1);
+		else
+			WorkScreen(1);
+	if (choice == 13 || choice == 32) {
+		if (menu == 1) {
+			FlyScreen(1);				//добавить объект Fly
+		}
+		if (menu == 2) {
+			HelicopterScreen(1);		//добавить объект Helicopter
+		}
+		if (menu == 3) {
+			BomberScreen(1);			//добавить объект Bomber
+		}
+		if (menu == 4) {
+			PlainScreen(1);				//добавить объект Plain
+		}
+		if (menu == 5) {
+			transportAircraftScreen(1);	//добавить объект TransportAircraft
+		}
+		if (menu == 6) {
+			
+			JetfighterScreen(1);		//добавить объект Jetfighter
+		}
+		if (menu == 7) {
+			LanguageScreen3(1);			//сменить язык
+			
+		}
+		if (menu == 8) {
+			DemonstrationScreen(1);		//вернуться в пред. меню
+		}
+		if (menu == 9) {
+			_exit(0);					//выход
+		}
+	}
+	else {
+		WorkScreen(1);
+	}
+}
+
+//добавления объекта Fly
+void Screens::FlyScreen(int menu) {
+	system("title Курсовая работа. Вариант 13. Добавить объект Полёт/Course work. Variant 13. Add Fly.");
+	system("cls");
+	system("mode con cols=100 lines=30");
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+
+	//создаем объект при помощи конструктора без параметров
+	Fly *e = new Fly();
+	//вызываем set методы для всех полей
+	cout << Lang::lang[34] << endl;
+	e->SetSpeed();
+	cout << Lang::lang[35] << endl;
+	e->SetHeight();
+	cout << Lang::lang[36] << endl;
+	e->SetDistance();
+	cout << Lang::lang[37] << endl;
+	e->SetNumOfPass();
+
+	e->id = Flies::AddFly(e);		//добавляем объект в вектор
+	e->print();						//выводим информацию
+	BackScreen(1);
+}
+
+//добавления объекта helicopter
+void Screens::HelicopterScreen(int menu) {
+	system("title Курсовая работа. Вариант 13. Добавить объект Вертолёт/Course work. Variant 13. Add helicopter.");
+	system("cls");
+	system("mode con cols=100 lines=30");
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+	//создаем объект при помощи конструктора без параметров
+	helicopter *h = new helicopter();
+	//вызываем set методы для всех полей
+	cout << Lang::lang[34] << endl;
+	h->SetSpeed();
+	cout << Lang::lang[35] << endl;
+	h->SetHeight();
+	cout << Lang::lang[36] << endl;
+	h->SetDistance();
+	cout << Lang::lang[37] << endl;
+	h->SetNumOfPass();
+	cout << Lang::lang[38] << endl;
+	h->SetNumOfScrew();
+	cout << Lang::lang[39] << endl;
+	h->SetCapacity();
+
+	h->id = Flies::AddFly(h);			//добавляем объект в вектор
+	h->print();							//выводим информацию
+	BackScreen(1);
+}
+
+//добавления объекта jetfighter
+void Screens::JetfighterScreen(int menu) {
+	system("title Курсовая работа. Вариант 13. Добавить объект Истребитель/Course work. Variant 13. Add jetfighter.");
+	system("cls");
+	system("mode con cols=100 lines=30");
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+	//создаем объект при помощи конструктора без параметров
+	jetfighter *j = new jetfighter();
+	//вызываем set методы для всех полей
+	cout << Lang::lang[34] << endl;
+	j->SetSpeed();
+	cout << Lang::lang[35] << endl;
+	j->SetHeight();
+	cout << Lang::lang[36] << endl;
+	j->SetDistance();
+	cout << Lang::lang[40] << endl;
+	j->setType();
+	cout << Lang::lang[43] << endl;
+	j->setCountry();
+	cout << Lang::lang[41] << endl;
+	j->setGuns();
+
+	j->id = Flies::AddFly(j);		//добавляем объект в вектор
+	j->print();						//выводим информацию
+	BackScreen(1);
+	
+}
+//добавление объекта bomber
+void Screens::BomberScreen(int menu) {
+	system("title Курсовая работа. Вариант 13. Добавить объект Бомбардировщик/Course work. Variant 13. Add bomber.");
+	system("cls");
+	system("mode con cols=100 lines=30");
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+	//создаем объект при помощи конструктора без параметров
+	bomber *b = new bomber();
+	//вызываем set методы для всех полей
+	cout << Lang::lang[34] << endl;
+	b->SetSpeed();
+	cout << Lang::lang[35] << endl;
+	b->SetHeight();
+	cout << Lang::lang[36] << endl;
+	b->SetDistance();
+	cout << Lang::lang[37] << endl;
+	b->SetNumOfPass();
+	cout << Lang::lang[42] << endl;
+	b->setFradius();
+	cout << Lang::lang[44] << endl;
+	b->setFmass();
+	cout << Lang::lang[57] << endl;
+	b->setPtime();
+
+	b->id = Flies::AddFly(b);			//добавляем объект в вектор
+	b->print();							//выводим информацию
+	BackScreen(1);
+	
+}
+
+//добавление объекта transportAircraft
+void Screens::transportAircraftScreen(int menu) {
+	system("title Курсовая работа. Вариант 13. Добавить объект Транспортный самолёт/Course work. Variant 13. Add transport aircraft.");
+	system("cls");
+	system("mode con cols=100 lines=30");
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+	//создаем объект при помощи конструктора без параметров
+	transportAircraft *t = new transportAircraft();
+	//вызываем set методы для всех полей
+	cout << Lang::lang[34] << endl;
+	t->SetSpeed();
+	cout << Lang::lang[35] << endl;
+	t->SetHeight();
+	cout << Lang::lang[36] << endl;
+	t->SetDistance();
+	cout << Lang::lang[37] << endl;
+	t->SetNumOfPass();
+	cout << Lang::lang[137] << endl;
+	t->setPrefix();
+	cout << Lang::lang[138] << endl;
+	t->setCarrying();
+	
+	t->id = Flies::AddFly(t);				//добавляем объект в вектор
+	t->print();								//выводим информацию
+	BackScreen(1);
+	
+}
+
+//Добавление объекта plain
+void Screens::PlainScreen(int menu) {
+	system("title Курсовая работа. Вариант 13. Добавить объект Пассажирский самолёт/Course work. Variant 13. Add plain.");
+	system("cls");
+	system("mode con cols=100 lines=30");
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+	//создаем объект при помощи конструктора без параметров
+	plain *p = new plain();
+	//вызываем set методы для всех полей
+	cout << Lang::lang[34] << endl;
+	p->SetSpeed();
+	cout << Lang::lang[35] << endl;
+	p->SetHeight();
+	cout << Lang::lang[36] << endl;
+	p->SetDistance();
+	cout << Lang::lang[37] << endl;
+	p->SetNumOfPass();
+	cout << Lang::lang[141] << endl;
+	p->setAge();
+	cout << Lang::lang[140] << endl;
+	p->setCrew();
+	cout << Lang::lang[139] << endl;
+	p->setEngines();
+	cout << Lang::lang[142] << endl;
+	p->setModel();
+
+	p->id = Flies::AddFly(p);				//добавляем объект в вектор
+	p->print();								//выводим информацию
+	BackScreen(1);
+}
+
+//возврат к предыдущему меню
+void Screens::BackScreen(int menu) {
+	map <int, string> nav;
+	nav[0] = Lang::lang[14];
+	renderMenu(nav, menu);
+
+	int choice = _getch();
+	if (choice == 224) {
+		choice = _getch();
+	}
+	if (choice == 13 || choice == 32) {
+		HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+		CONSOLE_CURSOR_INFO cursor = { 1, false };
+		SetConsoleCursorInfo(hCons, &cursor);
+		system("mode con cols=70 lines=30");
+		WorkScreen(1);							//меняем размеры экрана и переключаемся на рабочий экран
+	}
+	else {
+		system("mode con cols=70 lines=30");
+		WorkScreen(1);
+	}
+}
+
+//экран управления объектами
+void Screens::ManagerScreen(int menu) {
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, false };
+	SetConsoleCursorInfo(hCons, &cursor);
+	system("title Курсовая работа. Вариант 13.Режим управления/Course work. Variant 13. Manage menu.");
+	system("CLS");
+	system("mode con lines=30 cols=80");
+
+	map <int, string> nav;
+	nav[0] = Lang::lang[46];
+	nav[1] = Lang::lang[47];
+	nav[2] = Lang::lang[2];
+	nav[3] = Lang::lang[102];			//формирование меню из файла локализации
+	nav[4] = Lang::lang[136];
+	nav[5] = Lang::lang[14];
+	nav[6] = Lang::lang[3];
+
+	renderMenu(nav, menu);
+
+	int choice = _getch();
+	if (choice == 224)
+		choice = _getch();
+	if (choice == 72)
+		if (menu != 1)
+			ManagerScreen(menu - 1);
+		else
+			ManagerScreen(nav.size());
+	if (choice == 80)
+		if (menu != nav.size())
+			ManagerScreen(menu + 1);
+		else
+			ManagerScreen(1);
+	if (choice == 13 || choice == 32) {
+		if (menu == 1) {
+			system("cls");
+			int a = Flies::devices.size();
+			cout << Lang::lang[30] << a << endl;					//выводим общее колчиество объектов и колчиство
+			cout << "---" << Lang::lang[48] << "---" << "\n";		//объектов каждого класса отдельно
+			cout << Lang::lang[49] << Flies::counts[1] << endl;
+			cout << Lang::lang[50] << Flies::counts[2] << endl;
+			cout << Lang::lang[51] << Flies::counts[3] << endl;
+			cout << Lang::lang[52] << Flies::counts[4] << endl;
+			cout << Lang::lang[143] << Flies::counts[5] << endl;
+			cout << Lang::lang[53] << Flies::counts[6] << endl;
+			system("pause");
+			ManagerScreen(1);
+		}
+		if (menu == 2) {				//очистить список объектов
+			system("cls");
+			Flies::DeleteAllFlies();
+			cout << Lang::lang[26] << endl;
+			system("pause");
+			ManagerScreen(1);
+		}
+		if (menu == 3) {				//сменить язык
+			LanguageScreen4(1);
+		}
+		if (menu == 6) {				//вернуться в предыдущее меню
+			DemonstrationScreen(1);
+		}
+		if (menu == 7) {				//выход
+			_exit(0);
+		}
+		if (menu == 4) {				//сохранить состояние системы
+			system("cls");
+			FCache::saveCache();
+			cout << Lang::lang[72] << endl;
+			system("pause");
+			ManagerScreen(1);
+		}
+		if (menu == 5) {				//загрузить объекты из файла
+			system("cls");
+			FCache::getCache();
+			cout << Lang::lang[163] << endl;
+			system("pause");
+			ManagerScreen(1);
+		}
+	}
+	else {
+		ManagerScreen(1);
+	}
+		
+}
+
+//экран просмотра и редактирования
+void Screens::EditScreen(int menu, int device) {
+	system("title Курсовая работа. Вариант 13. Редактировать/Course work. Variant 13. Edit menu.");
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, false };
+	SetConsoleCursorInfo(hCons, &cursor);
+	system("cls");
+	map <int, string> nav;
+	nav[0] = Lang::lang[58];
+	nav[1] = Lang::lang[59];
+	nav[2] = Lang::lang[60];
+	nav[3] = Lang::lang[14];
+
+	renderMenu(nav, menu);
+
+
+	int choice = _getch();
+	if (choice == 224)
+		choice = _getch();
+	if (choice == 72) {
+		if (menu != 1) {
+			EditScreen((menu - 1), device);
+		}
+		else {
+			EditScreen(nav.size(), device);
+		}
+	}
+	if (choice == 80) {
+		if (menu != nav.size()) {
+			EditScreen((menu + 1), device);
+		}
+		else {
+			EditScreen(1, device);
+		}
+	}
+	if (choice == 13 || choice == 32) {
+		if (menu == 2) {
+			Flies::devices[device]->Edit();			//вызываем метод редактирования относительно текущего объекта
+			Flies::devices[device]->print();		//выводим новые данные
+			system("pause");
+			EditScreen(1, device);
+		}
+
+		if (menu == 3) {							//удалить текущий объект
+			if (Flies::devices.size() != 0) {
+				delete Flies::devices[device];
+
+				system("cls");
+				cout << Lang::lang[72] << endl;
+				system("pause");
+				EditScreen(1, device);
+			}
+			else {
+				system("cls");
+				cout << Lang::lang[28] << endl;
+				system("pause");
+				EditScreen(1, device);
+			}
+		}
+
+		if (menu == 1) {						//вывести данные об объекте
+			system("cls");
+			system("mode con cols=166");
+			Flies::devices[device]->print();
+			system("pause");
+			EditScreen(1, device);
+		}
+
+		if (menu == 4) {						//вернуться в пред. меню
+			DemonstrationScreen(1);
+		}
+
+		else {
+			EditScreen(1, device);
+		}
+	}
+	
+}
+
+//меню помощи
+void Screens::HelpScreen(int menu) {
+	system("title Курсовая работа. Вариант 13.Помощь/Course work. Variant 13. Help.");
+	system("CLS");
+	system("mode con lines=20 ");
+
+	map <int, string> nav;
+	nav[0] = Lang::lang[105];
+	nav[1] = Lang::lang[106];
+	nav[2] = Lang::lang[107];			//формирование меню на основе файла локализации
+	nav[3] = Lang::lang[2];
+	nav[4] = Lang::lang[14];
+
+	renderMenu(nav, menu);
+
+	int choice = _getch();
+	if (choice == 224)
+		choice = _getch();
+	if (choice == 72)
+		if (menu != 1)
+			HelpScreen(menu - 1);
+		else
+			HelpScreen(nav.size());
+	if (choice == 80)
+		if (menu != nav.size())
+			HelpScreen(menu + 1);
+		else
+			HelpScreen(1);
+	if (choice == 13 || choice == 32) {
+		if (menu == 1) {							//выводим текст файла "О программе"
+			system("cls");
+			for (int i = 108;i<115;i++) {
+				cout << Lang::lang[i] << endl;
+			}
+			system("pause");
+			HelpScreen(1);
+		}
+		if (menu == 2) {
+			system("cls");
+			for (int k = 116;k<120;k++) {			//вывод текста файла "Об авторе"
+				cout << Lang::lang[k] << endl;
+			}
+			system("pause");
+			HelpScreen(1);
+		}
+		if (menu == 3) {
+			system("cls");
+			for (int l = 121;l<132;l++) {			//вывод текста файла "Руководство оператора"
+				cout << Lang::lang[l] << endl;
+			}
+			system("pause");
+			HelpScreen(1);
+		}
+		if (menu == 4) {
+			LanguageScreen5(1);
+		}
+		if (menu == 5) {
+			MainScreen(1);
+		}
+	}
+	else {
+		HelpScreen(1);
+	}
+}
+
+
+//transportAircraft.cpp
+#include "stdafx.h"
+#include <conio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <iomanip>
+#include "windows.h"
+#include "fly.h"
+#include "transportAircraft.h"
+#include "lang.h"
+#include "getvalues.h"
+#include "screen.h"
+
+using namespace std;
+//Конструкторы
+transportAircraft::transportAircraft() {
+	cl = 6;
+	name = "TransportAircraft";
+	numOfPass = 0;
+}
+
+transportAircraft::transportAircraft(int S, int Dis, int Num, int H, int car, string pre){
+	speed = S;
+	height = H;
+	distance = Dis;
+	carrying = car;
+	prefix = pre;
+	numOfPass = 0;
+	cl = 6;
+	name = "TransportAircraft";
+}
+
+//Деструктор
+transportAircraft::~transportAircraft() {
+
+}
+
+//Get методы класса
+int transportAircraft::getCarrying() {
+	return carrying;
+}
+
+string transportAircraft::getPrefix() {
+	return prefix;
+}
+
+//метод установки грузоподъемности
+int transportAircraft::setCarrying() {
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+
+	int c = getInt();
+	do {
+		if (c < 5 || c > 450)
+		{
+			cerr << Lang::lang[31];
+			c = getInt();
+		}
+		else
+		{
+			carrying = c;
+			return 1;
+		}
+	} while (true);
+
+}
+
+//метод установки дальности полета	
+int transportAircraft::SetDistance() {
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+
+	int dist = getInt();
+	do {
+		if (dist < 1 || dist>maxdist)  //сравниваем с максимальной дальностью полета для данного класса
+		{
+			cerr << Lang::lang[31];
+			dist = getInt();
+		}
+		else
+		{
+			distance = dist;
+			return 1;
+		}
+	} while (true);
+
+}
+//метод установки скорости
+int transportAircraft::SetSpeed() {
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+
+	int spd = getInt();
+	do {
+		if (spd < 40 || spd>maxspeed)	//сравниваем с максимальной скоростью полета для данного класса
+		{
+			cerr << Lang::lang[31];
+			spd = getInt();
+		}
+		else
+		{
+			speed = spd;
+			return 1;
+		}
+	} while (true);
+
+}
+//метод установки колчества пассажиров
+int transportAircraft::SetNumOfPass() {
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+
+	int num = getInt();
+	do {
+		if (num < 0 || num>maxpass)		//сравниваем с максимальным колчиеством пассажиров для данного класса
+		{
+			cerr << Lang::lang[31];
+			num = getInt();
+		}
+		else
+		{
+			numOfPass = num;
+			return 1;
+		}
+	} while (true);
+
+}
+//метод установки высоты полета
+int transportAircraft::SetHeight() {
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+
+	int hei = getInt();
+	do {
+		if (hei < 1000 || hei>maxheight)		//сравниваем с максимальной высотой полета для данного класса
+		{
+			cerr << Lang::lang[31];
+			hei = getInt();
+		}
+		else
+		{
+			height = hei;
+			return 1;
+		}
+	} while (true);
+}
+
+//метод установки префикса названия
+int transportAircraft::setPrefix() {
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+	do {
+		string pre = getstr();
+		int lena = pre.length();
+		if ((lena <= 0) || (lena >2))
+		{
+			cerr << Lang::lang[31];
+		}
+		else
+		{
+			prefix = pre;
+			return 1;
+		}
+	} while (true);
+}
+
+//метод вывода данных об объекте
+void transportAircraft::print() {
+	system("mode con cols=140");
+	cout << setiosflags(ios::left);
+	cout << setw(30);
+	cout << Lang::lang[86];
+	cout << setw(20);
+	cout << Lang::lang[87];
+	cout << setw(30);
+	cout << Lang::lang[88];
+	cout << setw(20);
+	cout << Lang::lang[89];
+	cout << setw(20);
+	cout << Lang::lang[100];
+	cout << setw(20);
+	cout << Lang::lang[99];
+
+	cout.width(30);
+	cout << GetSpeed();
+	cout << setw(20);
+	cout << GetDistance();
+	cout << setw(30);
+	cout << GetNumOfPass();
+	cout << setw(20);
+	cout << GetHeight();
+	cout << setw(20);
+	cout << getPrefix();
+	cout << setw(20);
+	cout << getCarrying();
+}
+
+//метод редактирования данных
+void transportAircraft::Edit() {
+	system("cls");
+	bool fl = false;
+	cout << Lang::lang[62] << endl;
+	cout << Lang::lang[63] << endl;
+	cout << Lang::lang[64] << endl;
+	cout << Lang::lang[65] << endl;
+	cout << Lang::lang[162] << endl;
+	cout << Lang::lang[135] << endl;
+	cout << Lang::lang[68] << endl;
+	int k = getInt();
+	do {
+		if (k < 1 || k>6)
+		{
+			cerr << Lang::lang[31];
+			k = getInt();
+		}
+		else
+		{
+			fl = true;
+		}
+	} while (fl != true);
+
+	system("cls");
+	HANDLE hCons = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, true };
+	SetConsoleCursorInfo(hCons, &cursor);
+	cout << Lang::lang[98] << endl;
+	switch (k) {
+		//в зависимости от выбора пользователя вызываем необходимый Set метод
+	case 1:
+		SetSpeed();
+		break;
+	case 2:
+		SetDistance();
+		break;
+	case 3:
+		SetHeight();
+		break;
+	case 4:
+		SetNumOfPass();
+		break;
+	case 5:
+		setCarrying();
+		break;
+	case 6:
+		setPrefix();
+		break;
+	}
+
+
+}
+
+// bomber.h
+#include <sstream>
+#include "fly.h"
+
+using namespace std;
+class bomber : public Fly {
+protected:
+	int fradius;	//боевой радиус (м)
+	int fmass;		//боевая нагрузка (кг)
+	int ptime;		//время патрулирования(ч)
+
+	const int maxdist = 14000; //макс. дистанция полета бомбардировщика
+	const int maxheight = 20000; //макс. высота полета бомбардировщика
+	const int maxspeed = 2200; //макс. скорость полета бомбардировщика
+public:
+	bomber();
+	bomber(int S, int Dis, int Num, int H, int fr, int fm, int pt);
+	~bomber();
+	int setFradius();
+	int getFradius();
+	int setFmass();
+	int getFmass();
+	int setPtime();
+	int getPtime();
+	int SetDistance();
+	int SetHeight();
+	int SetNumOfPass();
+	int SetSpeed();
+
+	void print();
+	void Edit();
+};
+
+//Cache.h
+#pragma once
+#include <vector>
+#include "fly.h"
+#include <string.h>
+using namespace std;
+
+class FCache {
+private:
+	static string filename;
+public:
+	static void setCacheFilename(string);
+	static vector<Fly*> getCache();
+	static void saveCache();
+	static string getCacheName();
+};
+
+//fly.h
+
+#pragma once
+#include <sstream>
+
+using namespace std;
+class Fly {
+protected:
+	int speed;
+	int height;
+	int distance;
+	int numOfPass;
+	const int maxdist = 41467; //макс. дистанция полета летательного аппарата
+	const int maxheight = 37650; //макс. высота полета летательного аппарата
+	const int maxpass = 850; //макс. количество пассажиров летательного аппарата
+	const int maxspeed = 2570; //макс. скорость полета летательного аппарата
+	const char *name;
+	int cl;
+public:
+	int id;
+	Fly();
+	Fly(int S, int Dis, int Num, int H);
+	~Fly();
+	int GetSpeed();
+	virtual int SetSpeed();
+	int GetDistance();
+	virtual int SetDistance();
+	int GetHeight();
+	virtual int SetHeight();
+	int GetNumOfPass();
+	virtual int SetNumOfPass();
+	int IsFlying(int h, Fly f);
+	int makeFlight(int d, Fly f);
+
+	const char *GetName();
+	int GetCl();
+	virtual void print();
+	virtual void Edit();
+};
+
+//getvalues.h
+#pragma once
+#include <string>
+#include <conio.h>
+#include <iostream>
+using namespace std;
+
+int getInt();
+char* getChar();
+string getstr();
+
+//helicopter.h
+#include <sstream>
+#include "fly.h"
+using namespace std;
+class Temp{
+	int m;
+	virtual void none() = 0;
+};
+
+class helicopter: public Fly {
+protected:
+	int numOfScrew;
+	int capacity; // вместимость
+	const int maxdist = 800; //макс. дальность полета вертолета
+	const int maxheight = 9150; //макс. высота полета вертолета
+	const int maxpass = 85; //макс. количество пассажиров вертолета
+	int maxspeed = 295; //макс. скорость полета вертолета
+public:
+	int Fuel;
+	helicopter();
+	helicopter(int S, int Dis, int num, int H, int numS, int Cap);
+	~helicopter(); //сбросить 
+	int GetNumOfScrew();
+	int SetNumOfScrew();
+	int GetCapacity();
+	int SetCapacity();
+	int AddFuel(int F);
+	int operator~();
+	int SetDistance();
+	int SetSpeed();
+	int SetNumOfPass();
+	int SetHeight();
+	void print();
+	void Edit();
+};
+class UnflyedHelicopter :public helicopter, public Temp {
+	virtual void nane() = 0;
+};
+
+//jefighter.h
+#include <sstream>
+#include "fly.h"
+
+using namespace std;
+class jetfighter : public Fly {
+protected:
+	string type;
+	int guns;
+	string country;
+
+	const int maxdist = 4500; //макс. дистанция полета истребителя
+	const int maxheight = 18000; //макс. высота полета истребителя
+	const int maxspeed = 2570; //макс. скорость полета истребителя
+public:
+	jetfighter();
+	jetfighter(int S, int Dis, int Num, int H, string cou, int g, string tp);
+	~jetfighter();
+	int setType();
+	string getType();
+	int setGuns();
+	int getGuns();
+	int setCountry();
+	string getCountry();
+	void print();
+	void Edit();
+	int SetDistance();
+	int SetHeight();
+	int SetSpeed();
+	int SetNumOfPass();
+
+	friend void operator--(jetfighter&); //перегрузка оператора -- (не член класса)
+};
+
+//lang.h
+#pragma once
+#include <map>
+#include <string>
+using namespace std;
+#pragma warning(disable : 4996) //_CRT_SECURE_NO_WARNINGS
+
+class Lang {
+	static string langName;
+	
+public:
+	static string ln2;
+	static string ln1;
+	static string setLangFile(string filename);
+	static map <int, string> lang;
+	static void setLang(string);
+	static string getLangName();
+	static void setLangFilename();
+	static void check();
+	static string getLangFilename();
+};
+
+//manager.h
+#pragma once
+#include "stdafx.h"
+#include <vector>
+#include <map>
+#include <iterator>
+#include "fly.h"
+using namespace std;
+
+class Flies {
+public:
+	int id;
+	static map <int, int> counts;
+	static vector<Fly* > devices;
+	static int AddFly(Fly* device);
+	static void DeleteOneFly(Fly*);
+	static void DeleteAllFlies();
+};
+
+// palin.h
+#pragma once
+#include <sstream>
+#include "fly.h"
+
+using namespace std;
+class plain : public Fly {
+protected:
+	int crew;
+	int engines;
+	int age;
+	int model;
+
+	const int maxdist = 21601; //макс. дистанция пассажирского самолета
+	const int maxheight = 37650; //макс. высота пассажирского самолета
+	const int maxpass = 850; //макс. количество пассажиров пассажирского самолета
+	const int maxspeed = 2570; //макс. скорость пассажирского самолета
+
+public:
+	plain();
+	plain(int S, int Dis, int Num, int H, int cr, int eng, int a, int m);
+	~plain();
+	int setEngines();
+	int getEngines();
+	int setCrew();
+	int getCrew();
+	int setAge();
+	int getAge();
+	int setModel();
+	int getModel();
+
+	int SetDistance();
+	int SetHeight();
+	int SetSpeed();
+	int SetNumOfPass();
+
+	friend plain& operator++(plain&); //перегрузка оператора ++ Новое действие повысить срок эксаплуатации самолета
+	void print();
+	void Edit();
+};
+
+//screen.h
+#pragma once
+#include <map>
+#include <string>
+using namespace std;
+
+class Screens {
+	void renderMenu(map <int, string>, int);
+public:
+	void LanguageScreen(int);
+	void MainScreen(int);
+	void DemonstrationScreen(int);
+	void WorkScreen(int);
+	void ListScreen(int);
+	void EditScreen(int, int);
+
+	void FlyScreen(int);
+	void HelicopterScreen(int);
+	void JetfighterScreen(int);
+	void BomberScreen(int);
+	void transportAircraftScreen(int);
+	void PlainScreen(int);
+	void ManagerScreen(int);
+
+	void BackScreen(int);
+	void HelpScreen(int);
+
+	void LanguageScreen1(int);
+	void LanguageScreen2(int);
+	void LanguageScreen3(int);
+	void LanguageScreen4(int);
+	void LanguageScreen5(int);
+
+};
+
+//transportAircraft.h
+#include <sstream>
+#include "fly.h"
+#include "plain.h"
+
+using namespace std;
+class transportAircraft : public Fly {
+protected:
+	int carrying;
+	string prefix;
+
+	const int maxdist = 4500; //макс. дистанция полета летательного аппарата
+	const int maxheight = 11000; //макс. высота полета летательного аппарата
+	const int maxspeed = 850; //макс. скорость полета летательного аппарата
+public:
+	transportAircraft();
+	transportAircraft(int S, int Dis, int Num, int H, int car, string pre);
+	~transportAircraft();
+	int SetNumOfPass();
+	int SetHeight();
+	int setPrefix();
+	string getPrefix();
+	int setCarrying();
+	int SetDistance();
+	int SetSpeed();
+	int getCarrying();
+
+	void print();
+	void Edit();
+};
